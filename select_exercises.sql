@@ -14,6 +14,8 @@ FROM albums;
 -- 3b.
 SELECT DISTINCT artist
 FROM albums;
+SELECT COUNT(DISTINCT artist)
+FROM albums;
 -- There are 23 unique artist names in the albums table;
 
 -- 3c.
