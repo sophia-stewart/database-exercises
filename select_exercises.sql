@@ -1,3 +1,5 @@
+-- SELECT EXERCISES
+
 -- 2. Use the albums_db database.
 USE albums_db;
 
