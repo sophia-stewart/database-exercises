@@ -39,6 +39,8 @@ SELECT MIN(salary) AS smallest_current_salary,
 FROM salaries
 WHERE to_date = '9999-01-01';
 
+-- WHERE to_date > CURDATE() may be better as it is more universal; courtesy of review
+
 /*
 6.
 Use your knowledge of built in SQL functions to generate a username for all of the employees.
@@ -49,12 +51,12 @@ and the last two digits of the year that they were born.
 SELECT lower(
          CONCAT(
           SUBSTR(first_name, 1, 1),
-                SUBSTR(last_name, 1, 4),
-                '_',
-                  SUBSTR(birth_date, 6, 2),
-                  SUBSTR(birth_date, 3, 2)
-          )) AS username,
-          first_name,
-          last_name,
-          birth_date
+          SUBSTR(last_name, 1, 4),
+          '_',
+            SUBSTR(birth_date, 6, 2),
+          SUBSTR(birth_date, 3, 2)
+       )) AS username,
+       first_name,
+       last_name,
+       birth_date
 FROM employees;
