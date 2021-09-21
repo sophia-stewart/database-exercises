@@ -2,14 +2,14 @@
 
 USE employees;
 
--- 2. 
+-- 2. Find all employees with first names 'Irena', 'Vidya', or 'Maya', and order your results returned by first name. In your comments, answer: What was the first and last name in the first row of the results? What was the first and last name of the last person in the table?
 SELECT *
 FROM employees
 WHERE first_name IN ('Irena', 'Vidya', 'Maya')
 ORDER BY first_name;
 -- Irena Reutenauer is in the first row of the results, and Vidya Simmen is the last person in the table;
 
--- 3. 
+-- 3. Find all employees with first names 'Irena', 'Vidya', or 'Maya', and order your results returned by first name and then last name. In your comments, answer: What was the first and last name in the first row of the results? What was the first and last name of the last person in the table?
 SELECT *
 FROM employees
 WHERE first_name = 'Irena'
@@ -19,7 +19,7 @@ ORDER BY first_name,
          last_name;
 -- Irena Acton is in the first row of the results, and Vidya Zweizig is the last person in the table;
 
--- 4.
+-- 4. Find all employees with first names 'Irena', 'Vidya', or 'Maya', and order your results returned by last name and then first name. In your comments, answer: What was the first and last name in the first row of the results? What was the first and last name of the last person in the table?
 SELECT *
 FROM employees
 WHERE first_name = 'Irena'
@@ -29,14 +29,14 @@ ORDER BY last_name,
          first_name;
 -- Irena Acton is in the first row of the results, and Maya Zyda is the last person in the table;
 
--- 5.
+-- 5. Write a query to to find all employees whose last name starts and ends with 'E'. Sort the results by their employee number. Enter a comment with the number of employees returned, the first employee number and their first and last name, and the last employee number with their first and last name.
 SELECT *
 FROM employees
 WHERE last_name LIKE 'E%E'
 ORDER BY emp_no;
 -- 899 employees returned. The first employee listed is 10021 Ramzi Erde. The last employee listed is 499648 Tadahiro Erde;
 
--- 6.
+-- 6. Write a query to to find all employees whose last name starts and ends with 'E'. Sort the results by their hire date, so that the newest employees are listed first. Enter a comment with the number of employees returned, the name of the newest employee, and the name of the oldest emmployee.
 SELECT *
 FROM employees
 WHERE last_name LIKE 'E%E'
@@ -48,7 +48,7 @@ WHERE last_name LIKE 'E%E'
 ORDER BY birth_date;
 -- 899 employees returned. The newest employee is Teiji Eldridge. The employee who has been employed the longest is Sergi Erde. The employee with the greatest age is Piyush Erbe;
 
--- 7.
+-- 7. Find all employees hired in the 90s and born on Christmas. Sort the results so that the oldest employee who was hired last is the first result. Enter a comment with the number of employees returned, the name of the oldest employee who was hired last, and the name of the youngest emmployee who was hired first.
 SELECT *
 FROM employees
 WHERE (
