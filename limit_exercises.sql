@@ -7,6 +7,18 @@ SELECT DISTINCT last_name
 FROM employees
 ORDER BY last_name DESC
 LIMIT 10;
+/*
+Zykh
+Zyda
+Zwicker
+Zweizig
+Zumaque
+Zultner
+Zucker
+Zuberek
+Zschoche
+Zongker
+*/
 
 -- 3.
 SELECT *
