@@ -41,7 +41,12 @@ SELECT *
 FROM employees
 WHERE last_name LIKE 'E%E'
 ORDER BY hire_date DESC;
--- 899 employees returned. The newest employee is Teiji Eldridge. The oldest employee is Sergi Erde;
+
+SELECT *
+FROM employees
+WHERE last_name LIKE 'E%E'
+ORDER BY birth_date;
+-- 899 employees returned. The newest employee is Teiji Eldridge. The employee who has been employed the longest is Sergi Erde. The employee with the greatest age is Piyush Erbe;
 
 -- 7.
 SELECT *
