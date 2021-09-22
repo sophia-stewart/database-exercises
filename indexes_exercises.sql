@@ -1,7 +1,9 @@
 -- INDEXES EXERCISES
 
+-- 1. USE your employees database.
 USE employees;
 
+-- 2. DESCRIBE each table and inspect the keys and see which columns have indexes and keys.
 DESCRIBE departments;
 SHOW CREATE TABLE departments;
 
