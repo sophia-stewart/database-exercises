@@ -73,8 +73,13 @@ HAVING COUNT(*) > 1;
 
 -- 9. More practice with aggregate functions:
 -- 9a. Find the historic average salary for all employees. Now determine the current average salary.
-SELECT AVG(salary)
+SELECT AVG(salary) AS historic_avg_salary
 FROM salaries;
+-- 63810.7448 is the historic average salary for all employees.
+SELECT AVG(salary) AS current_avg_salary
+FROM salaries
+WHERE to_date > CURDATE();
+-- 72012.2359 is the current average salary for all employees.
 
 -- 9b. Now find the historic average salary for each employee. Reminder that when you hear "for each" in the problem statement, you'll probably be grouping by that exact column.
 SELECT emp_no,
