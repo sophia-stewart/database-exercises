@@ -36,53 +36,61 @@ GROUP BY roles.id;
 USE employees;
 
 -- 2. Using the example in the Associative Table Joins section as a guide, write a query that shows each department along with the name of the current manager for that department.
-SELECT d.dept_name AS 'department',
-       CONCAT(e.first_name, ' ', e.last_name) AS 'current_manager'
-FROM employees AS e
-JOIN dept_manager AS dm
-  ON dm.emp_no = e.emp_no AND dm.to_date > CURDATE()
-JOIN departments AS d
-  ON d.dept_no = dm.dept_no; 
-
--- 3. Find the name of all departments currently managed by women.
-SELECT d.dept_name AS 'department'
+SELECT d.dept_name AS 'Department Name',
+       CONCAT(e.first_name, ' ', e.last_name) AS 'Department Manager'
 FROM departments AS d
 JOIN dept_manager AS dm
   ON dm.dept_no = d.dept_no AND dm.to_date > CURDATE()
-JOIN employees AS e 
-  ON e.emp_no = dm.emp_no AND e.gender = 'F'; 
+JOIN employees AS e
+  ON e.emp_no = dm.emp_no
+ORDER BY d.dept_name; 
+
+-- 3. Find the name of all departments currently managed by women.
+SELECT d.dept_name AS 'Department Name',
+       CONCAT(e.first_name, ' ', e.last_name) AS 'Manager Name'
+FROM departments AS d
+JOIN dept_manager AS dm
+  ON dm.dept_no = d.dept_no AND dm.to_date > CURDATE()
+JOIN employees AS e
+  ON e.emp_no = dm.emp_no AND e.gender = 'F'
+ORDER BY d.dept_name;
 
 -- 4. Find the current titles of employees currently working in the Customer Service department.
-SELECT e.emp_no,
-       CONCAT(e.first_name, ' ', e.last_name) AS 'full_name',
-          t.title
+SELECT t.title AS 'Title',
+       COUNT(t.title) AS 'Count'
 FROM employees AS e
 JOIN titles AS t
   ON t.emp_no = e.emp_no AND t.to_date > CURDATE()
 JOIN dept_emp AS de
   ON de.emp_no = e.emp_no AND de.to_date > CURDATE()
 JOIN departments AS d
-  ON d.dept_no = de.dept_no AND d.dept_name = 'Customer Service';
+  ON d.dept_no = de.dept_no AND d.dept_name = 'Customer Service'
+GROUP BY t.title
+ORDER BY t.title;
 
 -- 5. Find the current salary of all current managers.
-SELECT dm.emp_no,
-       CONCAT(e.first_name, ' ', e.last_name) AS 'manager_name',
-          s.salary AS 'current_salary'
-FROM dept_manager AS dm
+SELECT d.dept_name AS 'Department Name',
+       CONCAT(e.first_name, ' ', e.last_name) AS 'Name',
+          s.salary AS 'Salary'
+FROM departments AS d
+JOIN dept_manager AS dm
+  ON dm.dept_no = d.dept_no AND dm.to_date > CURDATE()
 JOIN employees AS e
   ON e.emp_no = dm.emp_no
 JOIN salaries AS s
   ON s.emp_no = dm.emp_no AND s.to_date > CURDATE()
-WHERE dm.to_date > CURDATE();
+ORDER BY d.dept_name;
 
 -- 6. Find the number of current employees in each department.
-SELECT COUNT(DISTINCT de.emp_no) AS 'number_of_employees',
-       d.dept_name AS 'department'
+SELECT d.dept_no,
+       d.dept_name,
+       COUNT(DISTINCT de.emp_no) AS 'number_of_employees'
 FROM dept_emp AS de
 JOIN departments AS d
   ON d.dept_no = de.dept_no
 WHERE de.to_date > CURDATE()
-GROUP BY d.dept_name;
+GROUP BY d.dept_name
+ORDER BY d.dept_no;
 
 -- 7. Which department has the highest average salary? Hint: Use current not historic information.
 SELECT d.dept_name,
@@ -98,10 +106,8 @@ LIMIT 1;
 -- Sales has the highest average salary.
 
 -- 8. Who is the highest paid employee in the Marketing department?
-SELECT d.dept_name,
-       de.emp_no,
-       CONCAT(e.first_name, ' ', e.last_name) AS 'full_name',
-          s.salary
+SELECT first_name,
+       last_name
 FROM employees AS e
 JOIN dept_emp AS de
   ON de.emp_no = e.emp_no AND de.to_date > CURDATE()
@@ -114,12 +120,15 @@ LIMIT 1;
 -- Akemi Warwick is the highest paid employee in the Marketing department.
 
 -- 9. Which current department manager has the highest salary?
-SELECT dm.emp_no,
-       CONCAT(e.first_name, ' ', e.last_name) AS 'manager_name',
-          s.salary
+SELECT e.first_name,
+       e.last_name,
+       s.salary,
+          d.dept_name
 FROM employees AS e
 JOIN dept_manager AS dm
   ON dm.emp_no = e.emp_no AND dm.to_date > CURDATE()
+JOIN departments AS d
+  ON d.dept_no = dm.dept_no
 JOIN salaries AS s
   ON s.emp_no = dm.emp_no AND s.to_date > CURDATE()
 ORDER BY s.salary DESC
@@ -127,6 +136,18 @@ LIMIT 1;
 -- Vishwani Minakawa is the current department manager with the highest salary.
 
 -- 10. Bonus: Find the names of all current employees, their department name, and their current manager's name.
-
+SELECT CONCAT(ea.first_name, ' ', ea.last_name) AS 'Employee Name',
+       d.dept_name,
+       CONCAT(eb.first_name, ' ', eb.last_name) AS 'Manager Name'
+FROM employees AS ea
+LEFT JOIN dept_manager AS dm
+  ON dm.emp_no = ea.emp_no AND dm.to_date > CURDATE()
+LEFT JOIN employees AS eb
+  ON eb.emp_no = dm.emp_no
+JOIN dept_emp AS de
+  ON de.emp_no = ea.emp_no
+JOIN departments AS d
+  ON d.dept_no = de.dept_no
+;
 
 -- 11. Bonus: Who is the highest paid employee within each department?
