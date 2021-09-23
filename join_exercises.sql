@@ -31,6 +31,8 @@ FROM users
 RIGHT JOIN roles ON users.role_id = roles.id
 GROUP BY roles.id;
 
+-- 
+
 -- Employees Database Exercises:
 -- 1. Use the employees database.
 USE employees;
@@ -58,13 +60,12 @@ ORDER BY d.dept_name;
 -- 4. Find the current titles of employees currently working in the Customer Service department.
 SELECT t.title AS 'Title',
        COUNT(t.title) AS 'Count'
-FROM employees AS e
-JOIN titles AS t
-  ON t.emp_no = e.emp_no AND t.to_date > CURDATE()
+FROM titles AS t
 JOIN dept_emp AS de
-  ON de.emp_no = e.emp_no AND de.to_date > CURDATE()
+  ON de.emp_no = t.emp_no AND de.to_date > CURDATE()
 JOIN departments AS d
   ON d.dept_no = de.dept_no AND d.dept_name = 'Customer Service'
+WHERE t.to_date > CURDATE()
 GROUP BY t.title
 ORDER BY t.title;
 
@@ -76,7 +77,7 @@ FROM departments AS d
 JOIN dept_manager AS dm
   ON dm.dept_no = d.dept_no AND dm.to_date > CURDATE()
 JOIN employees AS e
-  ON e.emp_no = dm.emp_no
+USING(emp_no)
 JOIN salaries AS s
   ON s.emp_no = dm.emp_no AND s.to_date > CURDATE()
 ORDER BY d.dept_name;
