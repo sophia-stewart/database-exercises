@@ -137,18 +137,19 @@ LIMIT 1;
 -- Vishwani Minakawa is the current department manager with the highest salary.
 
 -- 10. Bonus: Find the names of all current employees, their department name, and their current manager's name.
-SELECT CONCAT(ea.first_name, ' ', ea.last_name) AS 'Employee Name',
-       d.dept_name,
-       CONCAT(eb.first_name, ' ', eb.last_name) AS 'Manager Name'
-FROM employees AS ea
-LEFT JOIN dept_manager AS dm
-  ON dm.emp_no = ea.emp_no AND dm.to_date > CURDATE()
-LEFT JOIN employees AS eb
-  ON eb.emp_no = dm.emp_no
+SELECT CONCAT(e.first_name, ' ', e.last_name) AS 'Employee',
+       d.dept_name AS 'Department',
+           CONCAT(m.first_name, ' ', m.last_name) AS 'Manager'
+FROM employees AS m
 JOIN dept_emp AS de
-  ON de.emp_no = ea.emp_no
+USING(emp_no)
 JOIN departments AS d
-  ON d.dept_no = de.dept_no
-;
+USING(dept_no)
+JOIN dept_manager AS dm
+USING(dept_no)
+JOIN employees AS e
+  ON e.emp_no = de.emp_no
+WHERE de.to_date > CURDATE()
+AND dm.to_date > CURDATE();
 
 -- 11. Bonus: Who is the highest paid employee within each department?
