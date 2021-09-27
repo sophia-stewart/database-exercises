@@ -103,3 +103,45 @@ FROM salaries;
 
 SELECT CAST((78 / 2844047) AS DECIMAL(65,20));
 -- .0027% of all salaries in the salaries table are within 1 standard deviation of the current highest salary
+
+-- BONUS EXERCISES
+
+-- 1. Find all the department names that currently have female managers.
+SELECT dept_name
+FROM departments
+JOIN dept_manager USING(dept_no)
+WHERE emp_no IN (
+SELECT emp_no
+FROM employees
+WHERE gender = 'F'
+)
+AND to_date > CURDATE();
+/*
+Finance
+Human Resources
+Development
+Research
+*/
+
+-- 2. Find the first and last name of the employee with the highest salary.
+SELECT first_name, last_name
+FROM employees
+WHERE emp_no = (
+SELECT emp_no
+FROM salaries
+GROUP BY emp_no
+ORDER BY MAX(salary) DESC
+LIMIT 1);
+-- Tokuyasu Pesch
+
+-- 3. Find the department name that the employee with the highest salary works in.
+SELECT dept_name
+FROM departments
+JOIN dept_emp USING(dept_no)
+WHERE emp_no = (
+SELECT emp_no
+FROM salaries
+GROUP BY emp_no
+ORDER BY MAX(salary) DESC
+LIMIT 1);
+-- Sales
