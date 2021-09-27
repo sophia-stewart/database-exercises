@@ -91,18 +91,38 @@ AND to_date > CURDATE()
 ) AS s;
 -- There are 78 current salaries within 1 standard deviation of the current highest salary.
 
-SELECT COUNT(*)
+SELECT CAST(
+((SELECT COUNT(*)
+FROM (
+SELECT *
 FROM salaries
-WHERE to_date > CURDATE();
+WHERE salary > (
+(SELECT MAX(salary)
+FROM salaries) - (SELECT STDDEV(salary)
+FROM salaries))
+AND to_date > CURDATE()
+) AS s) / (SELECT COUNT(*)
+FROM salaries WHERE to_date > CURDATE())) AS DECIMAL(65, 10));
+-- More simply:
+SELECT CAST((78 / 240124) AS DECIMAL(65, 10));
+-- ~.0325% of all current salaries in the salaries table are within 1 standard deviation of the current highest salary
 
-SELECT CAST((78 / 240124) AS DECIMAL(65,20));
--- .0325% of all current salaries are within 1 standard deviation of the current highest salary
+SELECT CAST(
+((SELECT COUNT(*)
+FROM (
+SELECT *
+FROM salaries
+WHERE salary > (
+(SELECT MAX(salary)
+FROM salaries) - (SELECT STDDEV(salary)
+FROM salaries))
+AND to_date > CURDATE()
+) AS s) / (SELECT COUNT(*)
+FROM salaries)) AS DECIMAL(65, 10));
+-- More simply:
+SELECT CAST((78 / 2844047) AS DECIMAL(65, 10));
+-- ~.0027% of all salaries in the salaries table are within 1 standard deviation of the current highest salary
 
-SELECT COUNT(*)
-FROM salaries;
-
-SELECT CAST((78 / 2844047) AS DECIMAL(65,20));
--- .0027% of all salaries in the salaries table are within 1 standard deviation of the current highest salary
 
 -- BONUS EXERCISES
 
