@@ -36,6 +36,7 @@ WHERE first_name = 'Aamod'
 AND dept_emp.to_date > CURDATE()
 GROUP BY title;
 -- List of titles that have ever been held by employees with the first name 'Aamod'
+-- Could also use DISTINCT in lieu of GROUP BY
 
 -- 3. How many people in the employees table are no longer working for the company? Give the answer in a comment in your code.
 SELECT COUNT(*)
@@ -49,6 +50,18 @@ GROUP BY emp_no
 HAVING MAX(to_date) < CURDATE()
 )) AS u;
 -- 59,900 people in the employees table are no longer working for the company.
+/*
+Could also use NOT IN instead of GROUP BY/HAVING:
+SELECT COUNT(*)
+FROM (
+SELECT *
+FROM employees
+WHERE emp_no NOT IN (
+SELECT emp_no
+FROM dept_emp
+WHERE to_date > CURDATE()
+)) AS u;
+*/
 
 -- 4. Find all the current department managers that are female. List their names in a comment in your code.
 SELECT CONCAT(first_name, ' ', last_name) AS full_name
@@ -85,11 +98,14 @@ SELECT *
 FROM salaries
 WHERE salary > (
 (SELECT MAX(salary)
-FROM salaries) - (SELECT STDDEV(salary)
-FROM salaries))
+FROM salaries WHERE to_date > CURDATE()) - (SELECT STDDEV(salary)
+FROM salaries WHERE to_date > CURDATE()))
 AND to_date > CURDATE()
 ) AS s;
--- There are 78 current salaries within 1 standard deviation of the current highest salary.
+-- There are 83 current salaries within 1 standard deviation of the current highest salary.
+
+SELECT STDDEV(salary)
+FROM salaries WHERE to_date > CURDATE();
 
 SELECT CAST(
 ((SELECT COUNT(*)
@@ -98,14 +114,14 @@ SELECT *
 FROM salaries
 WHERE salary > (
 (SELECT MAX(salary)
-FROM salaries) - (SELECT STDDEV(salary)
-FROM salaries))
+FROM salaries WHERE to_date > CURDATE()) - (SELECT STDDEV(salary)
+FROM salaries WHERE to_date > CURDATE()))
 AND to_date > CURDATE()
 ) AS s) / (SELECT COUNT(*)
 FROM salaries WHERE to_date > CURDATE())) AS DECIMAL(65, 10));
 -- More simply:
-SELECT CAST((78 / 240124) AS DECIMAL(65, 10));
--- ~.0325% of all current salaries in the salaries table are within 1 standard deviation of the current highest salary
+SELECT CAST((83 / 240124) AS DECIMAL(65, 10));
+-- ~.0346% of all current salaries in the salaries table are within 1 standard deviation of the current highest salary
 
 SELECT CAST(
 ((SELECT COUNT(*)
@@ -114,14 +130,14 @@ SELECT *
 FROM salaries
 WHERE salary > (
 (SELECT MAX(salary)
-FROM salaries) - (SELECT STDDEV(salary)
-FROM salaries))
+FROM salaries WHERE to_date > CURDATE()) - (SELECT STDDEV(salary)
+FROM salaries WHERE to_date > CURDATE()))
 AND to_date > CURDATE()
 ) AS s) / (SELECT COUNT(*)
 FROM salaries)) AS DECIMAL(65, 10));
 -- More simply:
-SELECT CAST((78 / 2844047) AS DECIMAL(65, 10));
--- ~.0027% of all salaries in the salaries table are within 1 standard deviation of the current highest salary
+SELECT CAST((83 / 2844047) AS DECIMAL(65, 10));
+-- ~.0029% of all salaries in the salaries table are within 1 standard deviation of the current highest salary
 
 
 -- BONUS EXERCISES
