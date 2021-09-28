@@ -41,8 +41,7 @@ SELECT * FROM employees_with_departments;
 USE sakila;
 
 CREATE TEMPORARY TABLE hopper_1551.payment AS
-SELECT *
-FROM payment;
+SELECT * FROM payment;
 
 USE hopper_1551;
 
@@ -57,3 +56,42 @@ UPDATE payment SET amount = amount*100;
 ALTER TABLE payment MODIFY COLUMN amount INT;
 
 -- 3. Find out how the current average pay in each department compares to the overall, historical average pay. In order to make the comparison easier, you should use the Z-score for salaries. In terms of salary, what is the best department right now to work for? The worst?
+USE employees;
+
+CREATE TEMPORARY TABLE hopper_1551.avg_salaries AS
+SELECT dept_name, avg(salary) AS current_avg_dept_salary, (SELECT avg(salary) FROM salaries) AS overall_historic_avg_salary
+FROM salaries s
+JOIN dept_emp de USING(emp_no)
+JOIN departments d USING(dept_no)
+WHERE s.to_date > CURDATE()
+AND de.to_date > CURDATE()
+GROUP BY dept_name;
+
+USE hopper_1551;
+
+SELECT DATABASE();
+
+SELECT * FROM avg_salaries;
+
+SHOW CREATE TABLE avg_salaries;
+
+ALTER TABLE avg_salaries ADD historic_stddev DECIMAL(14, 2);
+
+USE employees;
+
+UPDATE hopper_1551.avg_salaries SET historic_stddev = (SELECT stddev(salary) FROM salaries);
+
+USE hopper_1551;
+
+SELECT * FROM avg_salaries;
+
+ALTER TABLE avg_salaries ADD zscore DECIMAL(14, 2);
+
+UPDATE avg_salaries SET zscore =
+       (current_avg_dept_salary - (overall_historic_avg_salary))
+       /
+       (historic_stddev);
+
+SELECT * FROM avg_salaries;
+-- Sales is the best department to work for right now in terms of salary.
+-- Human Resources is the worst department to work for right now in terms of salary.
