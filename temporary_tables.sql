@@ -20,11 +20,14 @@ ALTER TABLE employees_with_departments ADD full_name VARCHAR(30);
 
 SHOW CREATE TABLE employees_with_departments;
 
+ALTER TABLE employees_with_departments MODIFY COLUMN full_name VARCHAR(31);
+-- Increased varchar to account for space character.
+
 SELECT * FROM employees_with_departments;
 
 -- b. Update the table so that full name column contains the correct data
 UPDATE employees_with_departments
-SET full_name = CONCAT(first_name, last_name);
+SET full_name = CONCAT(first_name, ' ', last_name);
 
 SELECT * FROM employees_with_departments;
 
@@ -36,6 +39,15 @@ DROP COLUMN last_name;
 SELECT * FROM employees_with_departments;
 
 -- d. What is another way you could have ended up with this same table?
+-- Could have created the table as desired from the beginning (using SELECT statements) instead of adding/modifying/dropping columns after the fact:
+USE employees;
+
+CREATE TEMPORARY TABLE hopper_1551.employees_with_departments AS
+SELECT dept_name, CONCAT(first_name, ' ', last_name) AS full_name
+FROM employees
+JOIN dept_emp USING(emp_no)
+JOIN departments USING(dept_no)
+WHERE to_date > CURDATE();
 
 -- 2. Create a temporary table based on the payment table from the sakila database.
 USE sakila;
@@ -50,10 +62,12 @@ SELECT DATABASE();
 SELECT * FROM payment;
 
 -- Write the SQL necessary to transform the amount column such that it is stored as an integer representing the number of cents of the payment. For example, 1.99 should become 199.
-SHOW CREATE TABLE payment;
+DESCRIBE payment;
 ALTER TABLE payment MODIFY COLUMN amount DECIMAL(10,2);
 UPDATE payment SET amount = amount*100;
 ALTER TABLE payment MODIFY COLUMN amount INT;
+SELECT * FROM payment;
+DESCRIBE payment;
 
 -- 3. Find out how the current average pay in each department compares to the overall, historical average pay. In order to make the comparison easier, you should use the Z-score for salaries. In terms of salary, what is the best department right now to work for? The worst?
 USE employees;
@@ -73,7 +87,7 @@ SELECT DATABASE();
 
 SELECT * FROM avg_salaries;
 
-SHOW CREATE TABLE avg_salaries;
+DESCRIBE avg_salaries;
 
 ALTER TABLE avg_salaries ADD historic_stddev DECIMAL(14, 2);
 
@@ -87,8 +101,9 @@ SELECT * FROM avg_salaries;
 
 ALTER TABLE avg_salaries ADD zscore DECIMAL(14, 2);
 
-UPDATE avg_salaries SET zscore =
-       (current_avg_dept_salary - (overall_historic_avg_salary))
+UPDATE avg_salaries 
+SET zscore =
+       (current_avg_dept_salary - overall_historic_avg_salary)
        /
        (historic_stddev);
 
