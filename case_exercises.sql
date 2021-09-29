@@ -2,7 +2,9 @@
 USE employees;
 
 -- 1. Write a query that returns all employees (emp_no), their department number, their start date, their end date, and a new column 'is_current_employee' that is a 1 if the employee is still with the company and 0 if not.
-SELECT emp_no, MIN(from_date) AS start_date, MAX(to_date) AS end_date, 
+/*
+-- work/thought process to get to final result:
+SELECT DISTINCT emp_no, MIN(from_date) AS start_date, MAX(to_date) AS end_date, 
 	CASE
 		WHEN MAX(to_date) > CURDATE()
 			THEN 1
@@ -11,6 +13,40 @@ SELECT emp_no, MIN(from_date) AS start_date, MAX(to_date) AS end_date,
 FROM dept_emp
 GROUP BY emp_no;
 -- need to figure out how to include dept_no
+-- includes dept_no but also shows duplicate entries for employees:
+SELECT emp_no, dept_no, MIN(from_date) AS start_date, MAX(to_date) AS end_date,
+	CASE
+		WHEN MAX(to_date) > CURDATE()
+			THEN 1
+		ELSE 0
+	END AS is_current_employee
+FROM dept_emp
+GROUP BY emp_no, dept_no;
+-- same as:
+SELECT emp_no, dept_no, from_date, to_date,
+	CASE
+		WHEN to_date > CURDATE()
+			THEN 1
+		ELSE 0
+	END AS is_current_employee
+FROM dept_emp;
+-- use temp table to work around duplicate employee entries
+CREATE TEMPORARY TABLE hopper_1551.current_employees AS
+SELECT DISTINCT emp_no, MIN(from_date) AS start_date, MAX(to_date) AS end_date, 
+	CASE
+		WHEN MAX(to_date) > CURDATE()
+			THEN 1
+		ELSE 0
+	END AS is_current_employee
+FROM dept_emp
+GROUP BY emp_no;
+SELECT * FROM hopper_1551.current_employees;
+*/
+-- Final result:
+SELECT ce.emp_no, dept_no, start_date, end_date, is_current_employee
+FROM hopper_1551.current_employees AS ce
+JOIN employees.dept_emp AS de
+  ON de.emp_no = ce.emp_no WHERE to_date IN(ce.end_date);
 
 -- 2. Write a query that returns all employee names (previous and current), and a new column 'alpha_group' that returns 'A-H', 'I-Q', or 'R-Z' depending on the first letter of their last name.
 SELECT CONCAT(first_name, ' ', last_name) as full_name,
